@@ -1,14 +1,15 @@
-import React from "react";
+"use client";
+
 import Square from "./Square";
 import calculateWinner from "../utils/calculateWinner";
 
 interface BoardProps {
   xIsNext: boolean;
   squares: (string | null)[];
-  onPlay: (nextSquares: (string | null)[]) => void;
+  onPlay: (squares: (string | null)[]) => void;
 }
 
-const Board: React.FC<BoardProps> = ({ xIsNext, squares, onPlay }) => {
+export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
   function handleClick(i: number) {
     if (calculateWinner(squares) || squares[i]) return;
 
@@ -23,7 +24,7 @@ const Board: React.FC<BoardProps> = ({ xIsNext, squares, onPlay }) => {
     : "Next player: " + (xIsNext ? "X" : "O");
 
   return (
-    <>
+    <div>
       <div className="status">{status}</div>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
@@ -40,8 +41,6 @@ const Board: React.FC<BoardProps> = ({ xIsNext, squares, onPlay }) => {
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
-    </>
+    </div>
   );
-};
-
-export default Board;
+}
