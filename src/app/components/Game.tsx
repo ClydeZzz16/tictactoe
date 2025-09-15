@@ -1,18 +1,17 @@
 "use client";
-
 import { useState } from "react";
 import Board from "./Board";
+import calculateWinner from "../utils/calculateWinner";
 
 export default function Game() {
-  const [history, setHistory] = useState<Array<(string | null)[]>>([
-    Array(9).fill(null),
-  ]);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
   const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXIsNext] = useState(true);
 
   const currentSquares = history[stepNumber];
+  const winner = calculateWinner(currentSquares);
 
-  function handlePlay(nextSquares: (string | null)[]) {
+  function handlePlay(nextSquares: string[]) {
     const nextHistory = [...history.slice(0, stepNumber + 1), nextSquares];
     setHistory(nextHistory);
     setStepNumber(nextHistory.length - 1);
@@ -24,8 +23,8 @@ export default function Game() {
     setXIsNext(nextStep % 2 === 0);
   }
 
-  const moves = history.map((squares, move) => {
-    const description = move ? "Go to move #" + move : "Go to game start";
+  const moves = history.map((_, move) => {
+    const description = move ? `Go to move #${move}` : "Go to game start";
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move)}>{description}</button>
@@ -33,12 +32,23 @@ export default function Game() {
     );
   });
 
+  let status;
+  if (winner) {
+    status = "Winner: " + winner;
+  } else if (stepNumber === 9) {
+    status = "It's a draw!";
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
+  }
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board squares={currentSquares} onPlay={handlePlay} />
+        <div className="status">{status}</div>
       </div>
       <div className="game-info">
+        <h2>Game History</h2>
         <ol>{moves}</ol>
       </div>
     </div>

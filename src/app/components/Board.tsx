@@ -3,29 +3,22 @@
 import Square from "./Square";
 import calculateWinner from "../utils/calculateWinner";
 
-interface BoardProps {
-  xIsNext: boolean;
-  squares: (string | null)[];
-  onPlay: (squares: (string | null)[]) => void;
-}
+type BoardProps = {
+  squares: string[]; // must be an array of strings (X, O, or null cast as string | null)
+  onPlay: (nextSquares: string[]) => void;
+};
 
-export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
+export default function Board({ squares, onPlay }: BoardProps) {
   function handleClick(i: number) {
-    if (calculateWinner(squares) || squares[i]) return;
+    if (squares[i] || calculateWinner(squares)) return;
 
     const nextSquares = squares.slice();
-    nextSquares[i] = xIsNext ? "X" : "O";
+    nextSquares[i] = squares.filter(Boolean).length % 2 === 0 ? "X" : "O";
     onPlay(nextSquares);
   }
 
-  const winner = calculateWinner(squares);
-  const status = winner
-    ? "Winner: " + winner
-    : "Next player: " + (xIsNext ? "X" : "O");
-
   return (
-    <div>
-      <div className="status">{status}</div>
+    <>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
@@ -41,6 +34,6 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
-    </div>
+    </>
   );
 }
